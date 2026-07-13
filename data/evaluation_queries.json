@@ -1,0 +1,125 @@
+[
+  {
+    "id": "bike_parking",
+    "query": "aparcamientos para bicicletas",
+    "domain": "mobility",
+    "relevant": ["aparcaments-bicicletes-aparcamientos-bicicletas"]
+  },
+  {
+    "id": "bike_sharing",
+    "query": "disponibilidad de bicicletas Valenbisi",
+    "domain": "mobility",
+    "relevant": ["valenbisi-disponibilitat-valenbisi-dsiponibilidad"]
+  },
+  {
+    "id": "bike_counters",
+    "query": "conteo de bicicletas en la ciudad",
+    "domain": "mobility",
+    "relevant": [
+      "intensitat-dels-punts-de-mesura-de-bicicletes-espires-electromagnetiques",
+      "punts-mesura-bicis-espires-electromagnetiques-puntos-medida-bicis-espiras-electr"
+    ]
+  },
+  {
+    "id": "bus_schedule",
+    "query": "horarios y paradas de autobus EMT",
+    "domain": "mobility",
+    "relevant": ["google-transit-lines-stops-bus-schedules"]
+  },
+  {
+    "id": "cycling_routes",
+    "query": "itinerarios y rutas ciclistas",
+    "domain": "mobility",
+    "relevant": ["itinerarios-ciclistas-itineraris-ciclistes"]
+  },
+  {
+    "id": "metro_stations",
+    "query": "estaciones de metro FGV",
+    "domain": "mobility",
+    "relevant": ["fgv-estacions-estaciones"]
+  },
+  {
+    "id": "air_quality",
+    "query": "datos historicos de calidad del aire",
+    "domain": "environment",
+    "relevant": ["hourly-air-quality-data-since-2016"]
+  },
+  {
+    "id": "pollution_stations",
+    "query": "estaciones de contaminacion atmosferica",
+    "domain": "environment",
+    "relevant": ["estacions-contaminacio-atmosferiques-estaciones-contaminacion-atmosfericas"]
+  },
+  {
+    "id": "night_noise",
+    "query": "mapa de ruido nocturno",
+    "domain": "environment",
+    "relevant": ["mapa-soroll-nit-mapa-ruido-noche"]
+  },
+  {
+    "id": "waste_containers",
+    "query": "contenedores de residuos solidos",
+    "domain": "environment",
+    "relevant": ["contenidors-residus-solids-contenidores-residuos-solidos"]
+  },
+  {
+    "id": "protected_trees",
+    "query": "arbolado protegido municipal",
+    "domain": "environment",
+    "relevant": ["arbratge-protegit-municipal-arbolado-protegido-municipal"]
+  },
+  {
+    "id": "neighborhoods",
+    "query": "limites de barrios de Valencia",
+    "domain": "urban",
+    "relevant": ["barris-barrios"]
+  },
+  {
+    "id": "vulnerability",
+    "query": "vulnerabilidad social por barrios",
+    "domain": "urban",
+    "relevant": ["vulnerabilidad-por-barrios"]
+  },
+  {
+    "id": "reduced_mobility_parking",
+    "query": "aparcamientos para personas con movilidad reducida",
+    "domain": "urban",
+    "relevant": ["aparcaments-persones-mobilitat-reduida-aparcamientos-personas-movilidad-reducida"]
+  },
+  {
+    "id": "ora_parking",
+    "query": "zonas de estacionamiento ORA",
+    "domain": "urban",
+    "relevant": ["aparcaments-ora-aparcamientos-ora"]
+  },
+  {
+    "id": "low_emission_zone",
+    "query": "zona de bajas emisiones",
+    "domain": "urban",
+    "relevant": ["zona-de-bajas-emisiones"]
+  },
+  {
+    "id": "tourism_offices",
+    "query": "oficinas de turismo",
+    "domain": "tourism",
+    "relevant": ["oficinas-de-turismo"]
+  },
+  {
+    "id": "tourist_routes",
+    "query": "rutas turisticas por barrios",
+    "domain": "tourism",
+    "relevant": ["rutas-turismo-barrio"]
+  },
+  {
+    "id": "public_housing",
+    "query": "vivienda de proteccion publica",
+    "domain": "housing",
+    "relevant": ["vivendes-proteccio-publica-vpp-viviendas-proteccion-publica-vpp"]
+  },
+  {
+    "id": "electricity_consumption",
+    "query": "consumo electrico municipal",
+    "domain": "energy",
+    "relevant": ["consumo-electrico-2018-2022"]
+  }
+]

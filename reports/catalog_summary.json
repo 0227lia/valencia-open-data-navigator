@@ -1,0 +1,115 @@
+{
+  "records": 296,
+  "resources": 1184,
+  "records_without_resources": 0,
+  "description_coverage": 0.9966216216216216,
+  "tag_coverage": 0.6722972972972973,
+  "license_coverage": 1.0,
+  "top_tags": [
+    [
+      "Servicios de utilidad pública y estatales",
+      43
+    ],
+    [
+      "Public and state utility services",
+      42
+    ],
+    [
+      "edificis",
+      22
+    ],
+    [
+      "edificios",
+      21
+    ],
+    [
+      "buildings",
+      19
+    ],
+    [
+      "Zonas sujetas a ordenación a restricciones o reglamentaciones y unidades de notificación",
+      19
+    ],
+    [
+      "Àrees subjectes a gestió restriccions o regulacions i unitats de notificació",
+      19
+    ],
+    [
+      "pressupostos",
+      18
+    ],
+    [
+      "presupuestos",
+      18
+    ],
+    [
+      "Areas subject to management restrictions or regulations and notification units",
+      18
+    ],
+    [
+      "Redes de transporte",
+      16
+    ],
+    [
+      "Xarxes de transport",
+      16
+    ]
+  ],
+  "top_formats": [
+    [
+      "GEOJSON",
+      189
+    ],
+    [
+      "CSV",
+      146
+    ],
+    [
+      "JSON",
+      143
+    ],
+    [
+      "HTML",
+      142
+    ],
+    [
+      "KMZ",
+      142
+    ],
+    [
+      "PBF",
+      140
+    ],
+    [
+      "DWG",
+      40
+    ],
+    [
+      "GML",
+      40
+    ],
+    [
+      "KML",
+      40
+    ],
+    [
+      "SHZ",
+      39
+    ],
+    [
+      "WFS",
+      39
+    ],
+    [
+      "WMS",
+      39
+    ]
+  ],
+  "validation": {
+    "records": 296,
+    "duplicate_names": [],
+    "missing_titles": [],
+    "records_without_resources": 0
+  },
+  "generated_at": "2026-07-13T01:24:11.849128+00:00"
+}

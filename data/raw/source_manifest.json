@@ -1,0 +1,8 @@
+{
+  "source": "https://opendata.vlci.valencia.es/api/3/action/package_search",
+  "retrieved_at": "2026-07-13T01:24:09.693939+00:00",
+  "declared_count": 296,
+  "received_count": 296,
+  "sha256": "0053d679e1520fd2cb054ec364144cb36c9bf0c0c2248ad03cedc44e910ae0cc",
+  "snapshot_file": "ckan_catalog_snapshot.json"
+}
