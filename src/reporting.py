@@ -12,8 +12,37 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
+from matplotlib.patches import Rectangle  # noqa: E402
 
 from .catalog import CatalogRecord, record_to_dict
+
+INK = "#0B2130"
+TEAL = "#0F766E"
+GREEN = "#247A68"
+BLUE = "#2F6BFF"
+CORAL = "#E85D45"
+MUTED = "#597181"
+GRID = "#D6E0E5"
+PAPER = "#F4F7F6"
+WHITE = "#FFFFFF"
+
+
+def _apply_report_style() -> None:
+    plt.rcParams.update(
+        {
+            "font.family": "DejaVu Sans",
+            "font.size": 10,
+            "axes.titlesize": 13,
+            "axes.titleweight": "bold",
+            "axes.labelcolor": INK,
+            "axes.edgecolor": GRID,
+            "xtick.color": MUTED,
+            "ytick.color": MUTED,
+            "figure.facecolor": PAPER,
+            "axes.facecolor": WHITE,
+        }
+    )
 
 
 def _catalog_frame(records: list[CatalogRecord]) -> pd.DataFrame:
@@ -44,32 +73,108 @@ def _short_label(value: str, limit: int = 34) -> str:
 
 
 def _plot_scorecard(metrics: dict[str, dict[str, float]], destination: Path) -> None:
+    _apply_report_style()
     frame = pd.DataFrame(metrics).T.reset_index(names="strategy")
-    label_map = {
+    metric_labels = {
         "mrr_at_10": "MRR@10",
         "recall_at_5": "Recall@5",
         "ndcg_at_10": "nDCG@10",
     }
-    colors = ["#00795a", "#0c8a79", "#ed6a4a", "#496a59"]
-    figure, axes = plt.subplots(1, 3, figsize=(14, 4.5), dpi=170)
-    for axis, (column, title) in zip(axes, label_map.items(), strict=True):
-        bars = axis.bar(frame["strategy"], frame[column], color=colors)
-        axis.set_title(title, loc="left", fontweight="bold")
-        axis.set_ylim(0, 1.08)
-        axis.set_ylabel("mean score")
-        axis.tick_params(axis="x", rotation=25)
-        axis.grid(axis="y", alpha=0.2)
-        for bar, value in zip(bars, frame[column], strict=True):
-            axis.text(bar.get_x() + bar.get_width() / 2, value + 0.03, f"{value:.3f}", ha="center", fontsize=9)
-    figure.suptitle("Versioned relevance benchmark: retrieval strategy comparison", x=0.05, ha="left", fontsize=14)
-    figure.tight_layout()
-    figure.savefig(destination, bbox_inches="tight")
+    strategy_labels = {
+        "bm25": "BM25 lexical",
+        "lsa": "LSA semantic",
+        "hybrid": "Hybrid RRF",
+        "hybrid_mmr": "Hybrid RRF + MMR",
+    }
+    frame["label"] = frame["strategy"].map(strategy_labels).fillna(frame["strategy"])
+    metric_columns = list(metric_labels)
+    matrix = frame[metric_columns].to_numpy()
+
+    figure = plt.figure(figsize=(15, 6.4), dpi=170, facecolor=PAPER)
+    grid = figure.add_gridspec(1, 2, left=0.07, right=0.965, top=0.72, bottom=0.16, wspace=0.28)
+    matrix_axis = figure.add_subplot(grid[0, 0])
+    tradeoff_axis = figure.add_subplot(grid[0, 1])
+
+    cmap = LinearSegmentedColormap.from_list("retrieval", ["#E7EEF1", "#8CC8C0", TEAL])
+    matrix_axis.imshow(matrix, cmap=cmap, vmin=max(0.0, matrix.min() - 0.05), vmax=1.0, aspect="auto")
+    matrix_axis.set_xticks(range(len(metric_columns)), [metric_labels[column] for column in metric_columns])
+    matrix_axis.set_yticks(range(len(frame)), frame["label"])
+    matrix_axis.tick_params(length=0, pad=8)
+    matrix_axis.set_title("Offline relevance matrix", loc="left", color=INK, pad=14)
+    for row in range(matrix.shape[0]):
+        for column in range(matrix.shape[1]):
+            value = matrix[row, column]
+            text_color = WHITE if value >= 0.86 else INK
+            matrix_axis.text(column, row, f"{value:.3f}", ha="center", va="center", color=text_color, weight="bold", fontsize=11)
+    for column in range(matrix.shape[1]):
+        best_row = int(matrix[:, column].argmax())
+        matrix_axis.add_patch(Rectangle((column - 0.48, best_row - 0.48), 0.96, 0.96, fill=False, edgecolor=CORAL, linewidth=2.4))
+    for spine in matrix_axis.spines.values():
+        spine.set_visible(False)
+
+    colors = [INK, BLUE, CORAL, GREEN]
+    label_offsets = {
+        "bm25": (8, 7),
+        "lsa": (8, 7),
+        "hybrid": (8, 12),
+        "hybrid_mmr": (8, -20),
+    }
+    for color, (_, row) in zip(colors, frame.iterrows(), strict=True):
+        tradeoff_axis.scatter(
+            row["mrr_at_10"],
+            row["recall_at_5"],
+            s=420 * row["ndcg_at_10"],
+            color=color,
+            edgecolor=WHITE,
+            linewidth=1.6,
+            zorder=3,
+        )
+        tradeoff_axis.annotate(
+            row["label"],
+            (row["mrr_at_10"], row["recall_at_5"]),
+            xytext=label_offsets.get(row["strategy"], (8, 7)),
+            textcoords="offset points",
+            color=INK,
+            fontsize=9.5,
+            weight="bold" if row["strategy"] == "bm25" else "normal",
+        )
+    tradeoff_axis.axvline(frame["mrr_at_10"].mean(), color=GRID, linestyle="--", linewidth=1.2)
+    tradeoff_axis.axhline(frame["recall_at_5"].mean(), color=GRID, linestyle="--", linewidth=1.2)
+    tradeoff_axis.set_xlim(frame["mrr_at_10"].min() - 0.04, frame["mrr_at_10"].max() + 0.06)
+    tradeoff_axis.set_ylim(frame["recall_at_5"].min() - 0.04, 1.015)
+    tradeoff_axis.set_xlabel("MRR@10  |  first relevant result")
+    tradeoff_axis.set_ylabel("Recall@5  |  early retrieval coverage")
+    tradeoff_axis.set_title("Precision-recall operating space", loc="left", color=INK, pad=14)
+    tradeoff_axis.grid(color=GRID, linewidth=0.8)
+    tradeoff_axis.set_axisbelow(True)
+    tradeoff_axis.spines[["top", "right"]].set_visible(False)
+
+    figure.text(0.07, 0.92, "VALENCIA OPEN DATA NAVIGATOR", color=TEAL, fontsize=10, weight="bold")
+    figure.text(0.07, 0.855, "Retrieval quality, without hiding the trade-off", color=INK, fontsize=24, weight="bold")
+    figure.text(
+        0.07,
+        0.805,
+        "Versioned offline benchmark across lexical, semantic and hybrid ranking strategies. Higher is better.",
+        color=MUTED,
+        fontsize=11,
+    )
+    figure.text(
+        0.07,
+        0.06,
+        "Coral outlines mark each metric leader. Bubble area encodes nDCG@10. Results are specific to the committed relevance set; they do not measure source-data quality.",
+        color=MUTED,
+        fontsize=9,
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(destination, dpi=180, bbox_inches="tight", facecolor=PAPER)
     plt.close(figure)
 
 
 def _plot_catalog_quality(frame: pd.DataFrame, summary: dict[str, object], destination: Path) -> None:
+    _apply_report_style()
     figure, axes = plt.subplots(2, 2, figsize=(13, 8), dpi=170)
-    palette = {"green": "#00795a", "coral": "#ed6a4a", "ink": "#16342b", "soft": "#8ab7a3"}
+    figure.patch.set_facecolor(PAPER)
+    palette = {"green": TEAL, "coral": CORAL, "ink": INK, "soft": "#8CC8C0"}
 
     axes[0, 0].hist(frame["resource_count"], bins=min(16, max(4, frame["resource_count"].nunique())), color=palette["green"], edgecolor="white")
     axes[0, 0].set_title("Resources per dataset", loc="left", fontweight="bold")
@@ -117,9 +222,9 @@ def _plot_catalog_quality(frame: pd.DataFrame, summary: dict[str, object], desti
         linespacing=1.7,
         bbox={"boxstyle": "round,pad=0.8", "facecolor": "#e8f0e9", "edgecolor": "#8ab7a3"},
     )
-    figure.suptitle("Valencia Open Data Navigator: catalog quality snapshot", x=0.05, ha="left", fontsize=14)
-    figure.tight_layout()
-    figure.savefig(destination, bbox_inches="tight")
+    figure.suptitle("Valencia Open Data Navigator | Catalog quality snapshot", x=0.05, ha="left", fontsize=17, fontweight="bold", color=INK)
+    figure.tight_layout(rect=(0, 0, 1, 0.94))
+    figure.savefig(destination, dpi=180, bbox_inches="tight", facecolor=PAPER)
     plt.close(figure)
 
 
